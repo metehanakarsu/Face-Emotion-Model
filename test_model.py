@@ -60,4 +60,40 @@ def realtime_emotion_detection():
             frame_copy = frame.copy()
             
             # Gri tonlamaya çevir
-            gray = cv2.cvtColor(frame, cv2.COLOR
+            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            
+            # Yüzleri tespit et
+            faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+            
+            # Her yüz için işlem yap
+            for (x, y, w, h) in faces:
+                # Yüz bölgesini al
+                roi = gray[y:y + h, x:x + w]
+                
+                # Görüntüyü ön işle
+                processed_roi = load_and_preprocess_image(roi)
+                
+                # Duygu tahmini yap
+                emotion, probability = predict_emotion(model, processed_roi)
+                
+                # Sonuçları görüntü üzerine çiz
+                cv2.rectangle(frame_copy, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(frame_copy, f"{emotion}: {probability:.2f}", 
+                           (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+            
+            # Sonucu göster
+            cv2.imshow("Duygu Analizi", frame_copy)
+            
+            # 'q' tuşuna basılırsa çık
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+        
+        # Kaynakları serbest bırak
+        cap.release()
+        cv2.destroyAllWindows()
+        
+    except Exception as e:
+        print(f"Hata: {str(e)}")
+
+if __name__ == "__main__":
+    realtime_emotion_detection() 

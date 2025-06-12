@@ -37,7 +37,7 @@ def predict_emotion(model, image):
 
 def realtime_emotion_detection():
     # Model yolu
-    model_path = "models/emotion_model.h5"
+    model_path = "data/models/emotion_model.h5"
     
     try:
         # Modeli yükle
